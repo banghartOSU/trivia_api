@@ -8,47 +8,25 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
-def get_categories(*args):
-  categories = Category.query.order_by(Category.id).all()
-  format_categories = [category.format() for category in categories]
-  res = {}
-  for category in format_categories:
-    res.update({ category.get('id'):category.get('type') }) #needed to return single dict after formatting list
-  return res
-
-def paginate_questions(request, selection):
-  page = request.args.get('page', 1, type=int)
-  start = (page - 1) * QUESTIONS_PER_PAGE
-  end = start + QUESTIONS_PER_PAGE
-
-  questions = [question.format() for question in selection]
-  current_questions = questions[start:end]
-  return current_questions
-
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
-  CORS(app, resources={"/*" : {"origins": "*"}} )
   
-  @app.after_request
-  def after_request(response):
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authroization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
-    return response
+  '''
+  @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+  '''
 
-  @app.route('/categories')
-  def get_categories_path():
-    if len(Category.query.all()) < 1:
-      abort(404)
-    try:
-      categories = get_categories()
-      return jsonify({
-        'success':True, 
-        'categories': categories
-        })
-    except:
-      abort(500)
+  '''
+  @TODO: Use the after_request decorator to set Access-Control-Allow
+  '''
+
+  '''
+  @TODO: 
+  Create an endpoint to handle GET requests 
+  for all available categories.
+  '''
+
 
   '''
   @TODO: 
@@ -62,25 +40,6 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
-  @app.route('/questions')
-  def get_questions():
-    if len(Question.query.all()) < 1:
-      abort(404)
-
-    try:
-      selection = Question.query.order_by(Question.id).all()
-      current_selection = paginate_questions(request, selection)
-      categories = get_categories()
-      return jsonify({
-        'success':True, 
-        'questions': current_selection,
-        'totalQuestions' : len(selection),
-        'categories' : categories,
-        'current_category' : 'Elf on shelf'
-        })
-    except:
-      abort(500)
-
 
   '''
   @TODO: 
